@@ -1,4 +1,4 @@
 require 'carnivore-rabbitmq/version'
 require 'carnivore'
 
-Carnivore::Source.provide(:http, 'carnivore-rabbitmq/rabbitmq')
+Carnivore::Source.provide(:rabbitmq, 'carnivore-rabbitmq/rabbitmq')
