@@ -1,5 +1,5 @@
 $LOAD_PATH.unshift File.expand_path(File.dirname(__FILE__)) + '/lib/'
-require 'carnivore-http/version'
+require 'carnivore-rabbitmq/version'
 Gem::Specification.new do |s|
   s.name = 'carnivore-rabbitmq'
   s.version = Carnivore::Rabbitmq::VERSION.version
