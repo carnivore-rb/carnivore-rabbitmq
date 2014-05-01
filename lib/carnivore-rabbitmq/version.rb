@@ -1,5 +1,5 @@
 module Carnivore
-  module RabbitMq
+  module Rabbitmq
     class Version < Gem::Version
     end
     VERSION = Version.new('0.1.0')
