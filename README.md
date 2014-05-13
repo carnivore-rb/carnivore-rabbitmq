@@ -12,7 +12,14 @@ require 'carnivore-rabbitmq'
 
 Carnivore.configure do
   source = Carnivore::Source.build(
-    :type => :rabbitmq, :args => {:stuff => :yeah}
+    :type => :rabbitmq,
+    :args => {
+      :connection => {
+        :connection => :args
+      },
+      :exchange => 'e_name',
+      :queue => 'q_name'
+    }
   )
 end
 ```

@@ -24,6 +24,7 @@ module Carnivore
       attr_reader :message_collector
 
       trap_exit :collector_failure
+      finalizer :collector_teardown
 
       # RabbitMQ source setup
       #
@@ -66,20 +67,32 @@ module Carnivore
         end
       end
 
+      # Destroy message collector
+      #
+      # @return [TrueClass]
+      def collector_teardown
+        connection.close
+        if(message_collector.alive?)
+          message_collector.terminate
+        end
+        true
+      end
+
       # Establish connection to remote server and setup
       #
       # @return [MarchHare::Session, Bunny::Session]
       def establish_connection
-        unless(args[connection_library])
+        unless(args[:connection])
           abort KeyError.new "No configuration defined for connection type (#{connection_library})"
         end
+        connection_args = Carnivore::Utils.symbolize_hash(args[:connection])
         case connection_library
         when :bunny
           require 'bunny'
-          @connection = Bunny.new(args[:connection])
+          @connection = Bunny.new(connection_args)
         when :march_hare
           require 'march_hare'
-          @connection = MarchHare.new(args[:connection])
+          @connection = MarchHare.new(connection_args)
         else
           abort ArgumentError.new("No valid connection arguments defined (:bunny or :march_hare must be defined)")
         end
