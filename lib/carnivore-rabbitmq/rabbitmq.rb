@@ -18,6 +18,8 @@ module Carnivore
       attr_reader :channel
       # @return [MarchHare::Queue, Bunny::Queue] current queue
       attr_reader :queue
+      # @return [String] routing key
+      attr_reader :routing_key
       # @return [Queue] message queue
       attr_reader :message_queue
       # @return [Carnviore::Source::Rabbitmq::MessageCollector] message collector
@@ -99,7 +101,9 @@ module Carnivore
         connection.start
         @channel = connection.create_channel
         @exchange = channel.topic(args[:exchange])
-        @queue = channel.queue(args[:queue], :auto_delete => false).bind(exchange) # TODO: Add topic key
+        @queue = channel.queue(args[:queue], :auto_delete => false).
+          bind(exchange, :routing_key => routing_key)
+        @routing_key = args.fetch(:routing_key, '_default')
         @connection
       end
 
@@ -118,7 +122,7 @@ module Carnivore
       # @param payload [Object]
       def transmit(payload, *_)
         payload = MultiJson.dump(payload) unless payload.is_a?(String)
-        queue.publish(payload)
+        queue.publish(payload, :routing_key => routing_key)
       end
 
       # Confirm message processing
