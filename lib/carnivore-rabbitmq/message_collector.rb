@@ -30,10 +30,16 @@ module Carnivore
         # @return [TrueClass]
         def collect_messages
           queue.subscribe(:block => true, :ack => true) do |info, metadata, payload|
+            begin
+              payload = MultiJson.load(payload)
+            rescue MultiJson::ParseError
+              warn 'Received payload not in JSON format. Failed to parse!'
+            end
             debug "Message received: #{payload.inspect}"
             debug "Message info: #{info.inspect}"
             debug "Message metadata: #{metadata.inspect}"
             message_queue << {:info => info, :metadata => metadata, :payload => payload}
+            debug "Sending new messages signal to: #{notify} (current queue size: #{message_queue.size})"
             notify.signal(:new_messages)
           end
           true
