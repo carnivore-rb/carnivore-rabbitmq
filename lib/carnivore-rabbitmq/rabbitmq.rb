@@ -30,32 +30,33 @@ module Carnivore
 
       # RabbitMQ source setup
       #
-      # @param args [Hash] initialization configuration
-      # @option args [String] :queue name of queue
-      # @option args [String] :exchange name of exchange
-      # @option args [Hash] :connection configuration hash for connection
-      # @option args [String, Symbol] :force_library :bunny or :march_hare
-      def setup(args={})
+      # @param init_args [Hash] initialization configuration
+      # @option init_args [String] :queue name of queue
+      # @option init_args [String] :exchange name of exchange
+      # @option init_args [Hash] :connection configuration hash for connection
+      # @option init_args [String, Symbol] :force_library :bunny or :march_hare
+      def setup(init_args={})
         require 'carnivore-rabbitmq/message_collector'
         @args = args.dup
         @message_queue = Queue.new
         @queue_name = args[:queue]
         @exchange_name = args[:exchange]
-        @notifier = Celluloid::Signals.new
         debug "Creating Rabbitmq source instance <#{name}>"
       end
 
       # Connect to the remote server
       def connect
         establish_connection
-        start_collector
       end
 
       # Start the message collection
       def start_collector
-        @message_collector = MessageCollector.new(queue, message_queue, current_actor)
-        self.link message_collector
-        message_collector.async.collect_messages
+        unless(@collecting)
+          @collecting = true
+          @message_collector = MessageCollector.new(queue, message_queue, current_actor)
+          self.link message_collector
+          message_collector.async.collect_messages
+        end
       end
 
       # Restart collector if unexpectedly failed
@@ -73,8 +74,8 @@ module Carnivore
       #
       # @return [TrueClass]
       def collector_teardown
-        connection.close
-        if(message_collector.alive?)
+        connection.close if connection
+        if(message_collector && message_collector.alive?)
           message_collector.terminate
         end
         true
@@ -111,6 +112,7 @@ module Carnivore
       #
       # @return [Hash] payload
       def receive(*_)
+        start_collector
         while(message_queue.empty?)
           wait(:new_messages)
         end
