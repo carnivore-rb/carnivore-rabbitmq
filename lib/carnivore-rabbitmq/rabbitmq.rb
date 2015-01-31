@@ -100,11 +100,11 @@ module Carnivore
           abort ArgumentError.new("No valid connection arguments defined (:bunny or :march_hare must be defined)")
         end
         connection.start
+        @routing_key = args.fetch(:routing_key, '_default')
         @channel = connection.create_channel
         @exchange = channel.topic(args[:exchange])
         @queue = channel.queue(args[:queue], :auto_delete => false).
           bind(exchange, :routing_key => routing_key)
-        @routing_key = args.fetch(:routing_key, '_default')
         @connection
       end
 
@@ -124,7 +124,11 @@ module Carnivore
       # @param payload [Object]
       def transmit(payload, *_)
         payload = MultiJson.dump(payload) unless payload.is_a?(String)
-        queue.publish(payload, :routing_key => routing_key)
+        if(args[:publish_via].to_s == 'exchange')
+          exchange.publish(payload, :routing_key => routing_key)
+        else
+          queue.publish(payload, :routing_key => routing_key)
+        end
       end
 
       # Confirm message processing
