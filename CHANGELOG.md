@@ -1,3 +1,7 @@
+# v0.1.4
+* Move routing key set prior to queue setup
+* Add `:publish_to` option to allow publish to exchange instead of queue
+
 # v0.1.2
 * Include option to provide routing key
 * Only start message collection if source is receiving
