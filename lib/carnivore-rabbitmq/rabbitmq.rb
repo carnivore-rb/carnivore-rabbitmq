@@ -100,7 +100,7 @@ module Carnivore
           abort ArgumentError.new("No valid connection arguments defined (:bunny or :march_hare must be defined)")
         end
         connection.start
-        @routing_key = args.fetch(:routing_key, '_default')
+        @routing_key = args[:routing_key]
         @channel = connection.create_channel
         @exchange = channel.topic(args[:exchange])
         @queue = channel.queue(args[:queue], :auto_delete => false).
