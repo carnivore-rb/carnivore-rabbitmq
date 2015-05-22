@@ -1,3 +1,6 @@
+# v0.1.6
+* Fix connection setup when using march_hare
+
 # v0.1.4
 * Move routing key set prior to queue setup
 * Add `:publish_to` option to allow publish to exchange instead of queue
