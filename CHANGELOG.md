@@ -1,3 +1,7 @@
+# v0.1.8
+* Include support for auto extraction
+* Detect received payload correctly based on adapter
+
 # v0.1.6
 * Fix connection setup when using march_hare
 
