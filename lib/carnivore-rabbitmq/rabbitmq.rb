@@ -95,7 +95,7 @@ module Carnivore
           @connection = Bunny.new(connection_args)
         when :march_hare
           require 'march_hare'
-          @connection = MarchHare.new(connection_args)
+          @connection = MarchHare.connect(connection_args)
         else
           abort ArgumentError.new("No valid connection arguments defined (:bunny or :march_hare must be defined)")
         end
