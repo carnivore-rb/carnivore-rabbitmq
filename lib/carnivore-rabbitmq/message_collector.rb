@@ -1,10 +1,13 @@
+require 'carnivore-rabbitmq'
+
 module Carnivore
   class Source
     class Rabbitmq
       # Message collector
       class MessageCollector
 
-        include Celluloid
+        include Zoidberg::SoftShell
+        include Zoidberg::Supervise
         include Carnivore::Utils::Logging
 
         # @return [Bunny::Queue, MarchHare::Queue] remote queue
@@ -29,7 +32,7 @@ module Carnivore
         #
         # @return [TrueClass]
         def collect_messages
-          queue.subscribe(:block => true, :ack => true) do |info, metadata, payload|
+          queue.subscribe(:block => true, :manual_ack => true) do |info, metadata, payload|
             if(payload.nil?)
               payload = metadata
               metadata = {}

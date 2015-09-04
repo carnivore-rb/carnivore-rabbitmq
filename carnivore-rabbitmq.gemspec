@@ -11,7 +11,14 @@ spec = Gem::Specification.new do |s|
   s.description = 'Carnivore RabbitMQ source'
   s.require_path = 'lib'
   s.license = 'Apache 2.0'
-  s.add_dependency 'carnivore', '>= 0.1.8'
-  s.add_dependency 'bunny'
+  if(ENV['BUILD_JAVA'] || RUBY_PLATFORM == 'java')
+    s.platform = 'java'
+    s.add_runtime_dependency 'march_hare', '~> 2.12.0'
+  else
+    s.add_runtime_dependency 'bunny', '~> 2.2.0'
+  end
+  s.add_runtime_dependency 'carnivore', '>= 1.0.0', '< 2.0'
+  s.add_development_dependency 'pry'
+  s.add_development_dependency 'minitest'
   s.files = Dir['lib/**/*'] + %w(README.md CHANGELOG.md CONTRIBUTING.md LICENSE)
 end

@@ -25,9 +25,6 @@ module Carnivore
       # @return [Carnviore::Source::Rabbitmq::MessageCollector] message collector
       attr_reader :message_collector
 
-      trap_exit :collector_failure
-      finalizer :collector_teardown
-
       # RabbitMQ source setup
       #
       # @param init_args [Hash] initialization configuration
@@ -54,7 +51,6 @@ module Carnivore
         unless(@collecting)
           @collecting = true
           @message_collector = MessageCollector.new(queue, message_queue, current_actor)
-          self.link message_collector
           message_collector.async.collect_messages
         end
       end

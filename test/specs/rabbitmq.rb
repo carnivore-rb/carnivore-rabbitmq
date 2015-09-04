@@ -1,7 +1,7 @@
 require 'carnivore-rabbitmq'
 
 def generate_name(prefix)
-  "#{prefix}-#{Celluloid.uuid}"
+  "#{prefix}-#{Carnivore.uuid}"
 end
 
 describe Carnivore::Source::Rabbitmq do
@@ -27,7 +27,7 @@ describe Carnivore::Source::Rabbitmq do
       source_wait
       Carnivore::Supervisor.supervisor[:rabbitmq_source].name.wont_be_nil
       t.terminate
-      Carnivore::Supervisor.supervisor.terminate!
+      Carnivore::Supervisor.supervisor.terminate
     end
 
   end
@@ -51,7 +51,7 @@ describe Carnivore::Source::Rabbitmq do
           :exchange => generate_name(:exchange)
         }
       ).add_callback(:store) do |message|
-        MessageStore.messages.push(message[:message][:payload])
+        MessageStore.messages.push(message[:content])
       end
       @runner = Thread.new{ Carnivore.start! }
       source_wait do
@@ -63,7 +63,7 @@ describe Carnivore::Source::Rabbitmq do
 
     after do
       @runner.terminate
-      Carnivore::Supervisor.supervisor.terminate!
+      Carnivore::Supervisor.supervisor.terminate
     end
 
     describe 'message transmissions' do
