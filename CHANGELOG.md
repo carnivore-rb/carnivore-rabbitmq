@@ -1,3 +1,6 @@
+# v0.2.0
+* Update for latest carnivore
+
 # v0.1.8
 * Include support for auto extraction
 * Detect received payload correctly based on adapter
