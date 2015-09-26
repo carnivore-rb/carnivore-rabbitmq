@@ -20,8 +20,6 @@ module Carnivore
       attr_reader :queue
       # @return [String] routing key
       attr_reader :routing_key
-      # @return [Queue] message queue
-      attr_reader :message_queue
       # @return [Carnviore::Source::Rabbitmq::MessageCollector] message collector
       attr_reader :message_collector
 
@@ -33,9 +31,7 @@ module Carnivore
       # @option init_args [Hash] :connection configuration hash for connection
       # @option init_args [String, Symbol] :force_library :bunny or :march_hare
       def setup(init_args={})
-        require 'carnivore-rabbitmq/message_collector'
         @args = args.dup
-        @message_queue = Queue.new
         @queue_name = args[:queue]
         @exchange_name = args[:exchange]
         debug "Creating Rabbitmq source instance <#{name}>"
@@ -49,27 +45,15 @@ module Carnivore
       # Start the message collection
       def start_collector
         unless(@collecting)
-          @collecting = true
-          @message_collector = MessageCollector.new(queue, message_queue, current_actor)
-          message_collector.async.collect_messages
-        end
-      end
-
-      # Restart collector if unexpectedly failed
-      #
-      # @param object [Actor] crashed actor
-      # @param reason [Exception, NilClass]
-      def collector_failure(object, reason)
-        if(reason && object == message_collector)
-          error "Message collector unexpectedly failed: #{reason} (restarting)"
-          start_collector
+          @message_collector = MessageCollector.new(queue, current_actor)
+          message_collector.start!
         end
       end
 
       # Destroy message collector
       #
       # @return [TrueClass]
-      def collector_teardown
+      def terminate
         connection.close if connection
         if(message_collector && message_collector.alive?)
           message_collector.terminate
@@ -109,10 +93,7 @@ module Carnivore
       # @return [Hash] payload
       def receive(*_)
         start_collector
-        while(message_queue.empty?)
-          wait(:new_messages)
-        end
-        message_queue.pop
+        wait(:new_messages)
       end
 
       # Transmit payload to connection
