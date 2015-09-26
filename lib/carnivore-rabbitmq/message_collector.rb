@@ -12,20 +12,26 @@ module Carnivore
 
         # @return [Bunny::Queue, MarchHare::Queue] remote queue
         attr_reader :queue
-        # @return [Queue] local message bucket
-        attr_reader :message_queue
         # @return [Celluloid::Actor] actor to notify
         attr_reader :notify
 
         # Create new instance
         #
         # @param queue [Bunny::Queue, MarchHare::Queue] remote queue
-        # @param message_queue [Queue] local message bucket
-        # @param notify [Celluloid::Actor] actor to notify
-        def initialize(queue, message_queue, notify)
+        # @param notify [Zoidberg::Shell] actor to notify
+        def initialize(queue, notify)
           @queue = queue
-          @message_queue = message_queue
           @notify = notify
+        end
+
+        # Start message collection when restarted
+        def restarted
+          start!
+        end
+
+        # Start the collector
+        def start!
+          current_self.async.collect_messages
         end
 
         # Collect messages from remote queue
@@ -45,15 +51,15 @@ module Carnivore
             debug "Message received: #{payload.inspect}"
             debug "Message info: #{info.inspect}"
             debug "Message metadata: #{metadata.inspect}"
-            message_queue << Smash.new(
+            new_message = Smash.new(
               :raw => Smash.new(
                 :info => info,
                 :metadata => metadata
               ),
               :content => payload
             )
-            debug "Sending new messages signal to: #{notify} (current queue size: #{message_queue.size})"
-            notify.signal(:new_messages)
+            debug "Sending new message signal to: #{notify}"
+            notify.signal(:new_messages, new_message)
           end
           true
         end
