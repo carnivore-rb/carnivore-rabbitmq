@@ -6,6 +6,8 @@ module Carnivore
     # RabbitMQ based carnivore source
     class Rabbitmq < Source
 
+      option :cache_signals
+
       autoload :MessageCollector, 'carnivore-rabbitmq/message_collector'
 
       # @return [Smash] initialization arguments

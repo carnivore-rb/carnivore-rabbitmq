@@ -46,7 +46,7 @@ module Carnivore
             begin
               payload = MultiJson.load(payload).to_smash
             rescue MultiJson::ParseError
-              warn 'Received payload not in JSON format. Failed to parse!'
+              debug 'Received payload not in JSON format. Failed to parse!'
             end
             debug "Message received: #{payload.inspect}"
             debug "Message info: #{info.inspect}"
