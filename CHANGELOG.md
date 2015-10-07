@@ -1,3 +1,8 @@
+# v0.2.2
+* Transfer messages via internal signal
+* Properly cleanup on termination
+* Cache signals on source
+
 # v0.2.0
 * Update for latest carnivore
 
