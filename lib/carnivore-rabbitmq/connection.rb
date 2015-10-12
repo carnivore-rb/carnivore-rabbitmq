@@ -27,7 +27,7 @@ module Carnivore
         # @return [Queue]
         attr_reader :message_queue
 
-        # Create new conection
+        # Create new connection
         #
         # @param r_source [Carnivore::Source::Rabbitmq] origin
         # @param m_queue [Queue] common message queue
