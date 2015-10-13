@@ -6,6 +6,8 @@ module Carnivore
     # RabbitMQ based carnivore source
     class Rabbitmq < Source
 
+      option :cache_signals
+
       autoload :Connection, 'carnivore-rabbitmq/connection'
 
       # @return [Smash] initialization arguments
@@ -39,8 +41,10 @@ module Carnivore
       #
       # @return [TrueClass]
       def terminate
-        connection.terminate if connection && connection.alive?
-        true
+        super
+        if(connection && connection.alive?)
+          connection.terminate
+        end
       end
 
       # Receive payload from connection
@@ -51,23 +55,27 @@ module Carnivore
           @collect_messages = true
           connection.async.receive_messages
         end
-        defer{ message_queue.pop }
+        wait(:new_message)
       end
 
       # Transmit payload to connection
       #
       # @param payload [Object]
       def transmit(payload, *_)
-        payload = MultiJson.dump(payload) unless payload.is_a?(String)
-        defer{ connection.write(payload) }
+        defer do
+          payload = MultiJson.dump(payload) unless payload.is_a?(String)
+          connection.write(payload)
+        end
       end
 
       # Confirm message processing
       #
       # @param message [Carnivore::Message]
       def confirm(message)
-        info "Confirming message #{message}"
-        defer{ connection.ack(message[:message][:info].delivery_tag) }
+        defer do
+          info "Confirming message #{message}"
+          connection.ack(message[:message][:info].delivery_tag)
+        end
       end
 
     end

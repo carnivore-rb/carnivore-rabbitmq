@@ -26,6 +26,8 @@ module Carnivore
         attr_reader :source
         # @return [Queue]
         attr_reader :message_queue
+        # @return [Signal]
+        attr_reader :source_signal
 
         # Create new connection
         #
@@ -104,9 +106,6 @@ module Carnivore
             rescue MultiJson::ParseError
               debug 'Received payload not in JSON format. Failed to parse!'
             end
-            debug "Message received: #{payload.inspect}"
-            debug "Message info: #{info.inspect}"
-            debug "Message metadata: #{metadata.inspect}"
             new_message = Smash.new(
               :raw => Smash.new(
                 :info => info,
@@ -114,7 +113,8 @@ module Carnivore
               ),
               :content => payload
             )
-            message_queue.push new_message
+            debug "<#{source}> New message: #{new_message}"
+            source.signal(:new_message, new_message)
           end
           true
         end
