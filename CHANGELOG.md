@@ -1,3 +1,7 @@
+# v0.2.4
+* Refactor to isolate connection to ease supervision
+* Push received messages via internal signaling
+
 # v0.2.2
 * Transfer messages via internal signal
 * Properly cleanup on termination
