@@ -49,6 +49,13 @@ module Carnivore
           end
         end
 
+        # Close down the connection if available
+        def terminate
+          if(connection)
+            connection.close
+          end
+        end
+
         # Establish connection to remote server and setup
         #
         # @return [MarchHare::Session, Bunny::Session]
