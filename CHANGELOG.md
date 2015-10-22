@@ -1,3 +1,6 @@
+# v0.2.6
+* Kill connection to server when terminated
+
 # v0.2.4
 * Refactor to isolate connection to ease supervision
 * Push received messages via internal signaling
