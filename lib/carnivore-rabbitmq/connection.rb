@@ -51,9 +51,7 @@ module Carnivore
 
         # Close down the connection if available
         def terminate
-          if(connection)
-            connection.close
-          end
+          connection.close
         end
 
         # Establish connection to remote server and setup
