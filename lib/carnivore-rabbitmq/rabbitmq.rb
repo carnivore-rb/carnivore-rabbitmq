@@ -42,9 +42,7 @@ module Carnivore
       # @return [TrueClass]
       def terminate
         super
-        if(connection && connection.alive?)
-          connection.terminate
-        end
+        connection.terminate
       end
 
       # Receive payload from connection
