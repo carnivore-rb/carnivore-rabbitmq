@@ -1,3 +1,7 @@
+# v0.2.8
+* Ensure custom connection is always killed
+* Close remote connection on termination
+
 # v0.2.6
 * Kill connection to server when terminated
 
