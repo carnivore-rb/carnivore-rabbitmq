@@ -1,3 +1,6 @@
+# v0.2.10
+* On demand message fetching to prevent local queue blowout
+
 # v0.2.8
 * Ensure custom connection is always killed
 * Close remote connection on termination
