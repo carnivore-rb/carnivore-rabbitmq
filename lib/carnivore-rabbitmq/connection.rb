@@ -122,6 +122,7 @@ module Carnivore
             )
             debug "<#{source}> New message: #{new_message}"
             source.signal(:new_message, new_message)
+            wait(:ready)
           end
           true
         end

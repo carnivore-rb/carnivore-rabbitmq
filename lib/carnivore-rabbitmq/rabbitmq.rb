@@ -53,6 +53,7 @@ module Carnivore
           @collect_messages = true
           connection.async.receive_messages
         end
+        connection.signal(:ready)
         wait(:new_message)
       end
 
