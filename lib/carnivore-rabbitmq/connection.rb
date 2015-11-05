@@ -10,6 +10,8 @@ module Carnivore
         include Zoidberg::Supervise
         include Carnivore::Utils::Logging
 
+        option :cache_signals
+
         # @return [Hash]
         attr_reader :source_args
         # @return [String]
