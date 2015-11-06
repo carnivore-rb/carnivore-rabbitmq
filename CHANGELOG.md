@@ -1,3 +1,6 @@
+# v0.2.12
+* Fix race condition around connection wait state
+
 # v0.2.10
 * On demand message fetching to prevent local queue blowout
 
